@@ -7,11 +7,14 @@ import {
 import { useFonts } from "expo-font";
 import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "react-native-reanimated";
 import { Button } from "react-native";
 
 import { useColorScheme } from "@/components/useColorScheme";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "@/lib/firebaseConfig";
+import { AuthProvider, useAuthContext } from "@/context/AuthContext";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -47,20 +50,37 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <AuthProvider>
+      <RootLayoutNav />
+    </AuthProvider>
+  );
 }
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const router = useRouter();
+  const { user, logout } = useAuthContext();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.replace("/login");
+    } catch (error) {
+      console.error("Błąd podczas wylogowywania", error);
+    }
+  };
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack
         screenOptions={{
-          headerRight: () => (
-            <Button title="Zaloguj" onPress={() => router.push("/login")} />
-          ),
+          headerRight: () =>
+            user ? (
+              <Button title="Wyloguj" onPress={handleLogout} color="red" />
+            ) : (
+              <Button title="Zaloguj" onPress={() => router.push("/login")} />
+            ),
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
