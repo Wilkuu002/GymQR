@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 
-import ScannerComp from "./ScannerComp";
+import ScannerComp from "./Scanner/ScannerComp";
 import { Text, View } from "./Themed";
 
 export default function EditScreenInfo({ path }: { path: string }) {

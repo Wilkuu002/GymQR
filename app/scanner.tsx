@@ -1,6 +1,9 @@
+import { Overlay } from "@/components/Scanner/Overlay";
 import { CameraView } from "expo-camera";
 import { Stack } from "expo-router";
+import { useEffect, useRef } from "react";
 import {
+  AppState,
   Linking,
   Platform,
   SafeAreaView,
@@ -8,7 +11,25 @@ import {
   StyleSheet,
 } from "react-native";
 
-export default function scanner() {
+export default function Scanner() {
+  const qrLock = useRef(false);
+  const appState = useRef(AppState.currentState);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === "active"
+      ) {
+        qrLock.current = false;
+      }
+      appState.current = nextAppState;
+    });
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
   return (
     <SafeAreaView style={StyleSheet.absoluteFillObject}>
       <Stack.Screen options={{ title: "Overview", headerShown: false }} />
@@ -17,9 +38,15 @@ export default function scanner() {
         style={StyleSheet.absoluteFill}
         facing="back"
         onBarcodeScanned={({ data }) => {
-          console.log("data", data);
+          if (data && !qrLock.current) {
+            qrLock.current = true;
+            setTimeout(async () => {
+              console.log(data);
+              Linking.openURL(data);
+            }, 500);
+          }
         }}
-      ></CameraView>
+      />
     </SafeAreaView>
   );
 }
