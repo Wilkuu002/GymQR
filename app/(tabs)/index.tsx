@@ -1,18 +1,17 @@
 import { StyleSheet } from "react-native";
-
-import EditScreenInfo from "@/components/EditScreenInfo";
 import { Text, View } from "@/components/Themed";
 
 export default function TabOneScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home Page</Text>
+      <Text style={styles.title}>index</Text>
+      <Text style={styles.title}>Witaj w Aplikacji GymQR</Text>
+      <Text>Skanuj kody i poznawaj ćwiczenia oraz mierz swoje wyniki </Text>
       <View
         style={styles.separator}
         lightColor="#eee"
         darkColor="rgba(255,255,255,0.1)"
       />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
     </View>
   );
 }

@@ -1,6 +1,5 @@
-import { Overlay } from "@/components/Scanner/Overlay";
 import { CameraView } from "expo-camera";
-import { Stack } from "expo-router";
+import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
 import {
   AppState,
@@ -14,6 +13,7 @@ import {
 export default function Scanner() {
   const qrLock = useRef(false);
   const appState = useRef(AppState.currentState);
+  const router = useRouter(); // Używamy routera z expo-router
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
@@ -32,7 +32,6 @@ export default function Scanner() {
 
   return (
     <SafeAreaView style={StyleSheet.absoluteFillObject}>
-      <Stack.Screen options={{ title: "Overview", headerShown: false }} />
       {Platform.OS === "android" ? <StatusBar hidden /> : null}
       <CameraView
         style={StyleSheet.absoluteFill}
@@ -42,7 +41,8 @@ export default function Scanner() {
             qrLock.current = true;
             setTimeout(async () => {
               console.log(data);
-              Linking.openURL(data);
+
+              router.push("/exercises");
             }, 500);
           }
         }}
